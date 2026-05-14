@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Auto Dealership</title>
+    <link rel="stylesheet" type= "text/css" href="style.css">
+    
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="C:\IGNITE\Drop1.jpg">
+              &nbsp;&nbsp;&nbsp;&nbsp;Jalaram Motors</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#inventory">Inventory</a></li>
+                <li><a href="#token">Token Info</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <h1>Welcome To Jalaram Car Selling Firm!</h1>
+            <p>Find budget-friendly premium quality cars on collection </p>
+            <p>Truseted by 10000+ customers</p>
+        </section>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="admin-panel" style="display: none;">
+            <h2>Admin Panel - Manage Inventory</h2>
+            <form class="admin-form" onsubmit="addCar(event)">
+                <div class="form-group">
+                    <label>Car Name & Model</label>
+                    <input type="text" id="carName" required>
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" id="carPrice" required>
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <input type="number" id="carYear" required>
+                </div>
+                <div class="form-group">
+                    <label>Mileage (km)</label>
+                    <input type="text" id="carMileage" required>
+                </div>
+                <div class="form-group">
+                    <label>Fuel Type</label>
+                    <select id="carFuel">
+                        <option>Petrol</option>
+                        <option>Diesel</option>
+                        <option>Electric</option>
+                        <option>Hybrid</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Transmission</label>
+                    <select id="carTransmission">
+                        <option>Manual</option>
+                        <option>Automatic</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="carDescription" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Car to Inventory</button>
+            </form>
+            <p style="margin-top: 1rem; color: #dc3545; font-weight: bold;">⚠️ Admin Only - This panel is only visible to the dealership owner</p>
+        </div>
+
+        <!-- Token Information -->
+        <section id="token" class="token-info">
+            <h2>Token Payment Information</h2>
+            <p>To reserve your desired car and ensure it's held exclusively for you, we require a token amount. This booking fee guarantees that the vehicle won't be sold to another customer while you complete your purchase process.</p>
+            <div class="token-amount">Token Amount: ₹50,000</div>
+            <p><strong>Benefits of Token Payment:</strong></p>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li>Car reserved exclusively for you for 7 days</li>
+                <li>Token amount is fully adjustable in final payment</li>
+                <li>Priority processing of documentation</li>
+                <li>Full refund if car doesn't meet your expectations</li>
+            </ul>
+        </section>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <h2>Search Our Inventory</h2>
+            <div class="search-controls">
+                <input type="text" id="searchInput" placeholder="Search by name or model..." onkeyup="filterCars()">
+                <select id="filterFuel" onchange="filterCars()">
+                    <option value="">All Fuel Types</option>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Electric">Electric</option>
+                    <option value="Hybrid">Hybrid</option>
+                </select>
+                <select id="filterTransmission" onchange="filterCars()">
+                    <option value="">All Transmissions</option>
+                    <option value="Manual">Manual</option>
+                    <option value="Automatic">Automatic</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Cars Grid -->
+        <div id="carsGrid" class="cars-grid"></div>
+    </div>
+
+    <!-- Chat Toggle Button -->
+    <div class="chat-toggle" onclick="toggleChat()">💬</div>
+
+    <!-- Chat Widget -->
+    <div id="chatWidget" class="chat-widget">
+        <div class="chat-header">
+            <span>Chat with Us</span>
+            <span class="chat-close" onclick="toggleChat()">×</span>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+            <div class="message message-admin">
+                Hello! Welcome to Premium Auto. How can I help you today?
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Type your message..." onkeypress="handleChatEnter(event)">
+            <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Premium Auto Dealership. All rights reserved.</p>
+        <p>Contact: +91 98765 43210 | Email: info@premiumauto.com</p>
+    </footer>
+
+    <script>
+        // Sample car data - stored in memory
+        let cars = [
+            {
+                id: 1,
+                name: "Honda City 2022",
+                price: 1250000,
+                year: 2022,
+                mileage: "15,000",
+                fuel: "Petrol",
+                transmission: "Automatic",
+                description: "Well maintained, single owner",
+                status: "available"
+            },
+            {
+                id: 2,
+                name: "Maruti Swift 2023",
+                price: 750000,
+                year: 2023,
+                mileage: "8,000",
+                fuel: "Petrol",
+                transmission: "Manual",
+                description: "Like new condition",
+                status: "available"
+            },
+            {
+                id: 3,
+                name: "Hyundai Creta 2021",
+                price: 1450000,
+                year: 2021,
+                mileage: "22,000",
+                fuel: "Diesel",
+                transmission: "Automatic",
+                description: "Fully loaded, excellent condition",
+                status: "tokened"
+            }
+        ];
+
+        function renderCars() {
+            const grid = document.getElementById('carsGrid');
+            grid.innerHTML = '';
+
+            cars.forEach(car => {
+                const card = document.createElement('div');
+                card.className = 'car-card';
+                card.innerHTML = `
+                    <div class="car-image">🚗</div>
+                    <div class="car-details">
+                        <div class="car-name">${car.name}</div>
+                        <div class="car-price">₹${car.price.toLocaleString('en-IN')}</div>
+                        <div class="car-info">
+                            <div>📅 ${car.year}</div>
+                            <div>🛣️ ${car.mileage} km</div>
+                            <div>⛽ ${car.fuel}</div>
+                            <div>⚙️ ${car.transmission}</div>
+                        </div>
+                        <p style="color: #666; margin-bottom: 1rem;">${car.description}</p>
+                        <span class="car-status status-${car.status}">
+                            ${car.status === 'available' ? '✓ Available' : '🔒 Tokened'}
+                        </span>
+                        <div style="margin-top: 1rem;">
+                            ${car.status === 'available' ? 
+                                `<button class="btn btn-token" onclick="initiatePayment(${car.id})">Pay Token & Reserve</button>` : 
+                                '<button class="btn btn-primary" disabled>Reserved</button>'
+                            }
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function addCar(event) {
+            event.preventDefault();
+            
+            const newCar = {
+                id: cars.length + 1,
+                name: document.getElementById('carName').value,
+                price: parseInt(document.getElementById('carPrice').value),
+                year: parseInt(document.getElementById('carYear').value),
+                mileage: document.getElementById('carMileage').value,
+                fuel: document.getElementById('carFuel').value,
+                transmission: document.getElementById('carTransmission').value,
+                description: document.getElementById('carDescription').value,
+                status: 'available'
+            };
+
+            cars.push(newCar);
+            renderCars();
+            event.target.reset();
+            alert('Car added successfully!');
+        }
+
+        function deleteCar(id) {
+            if (confirm('Are you sure you want to delete this car?')) {
+                cars = cars.filter(car => car.id !== id);
+                renderCars();
+            }
+        }
+
+        function initiatePayment(id) {
+            const car = cars.find(c => c.id === id);
+            if (car) {
+                // Show payment modal/confirmation
+                const confirmed = confirm(
+                    `Reserve ${car.name}?\n\n` +
+                    `Token Amount: ₹50,000\n\n` +
+                    `Benefits:\n` +
+                    `- Car reserved for 7 days\n` +
+                    `- Token adjustable in final payment\n` +
+                    `- Full refund if unsatisfied\n\n` +
+                    `Click OK to proceed to payment`
+                );
+                
+                if (confirmed) {
+                    // In real scenario, redirect to payment gateway
+                    alert(
+                        `Payment Gateway Integration\n\n` +
+                        `In production, you would be redirected to:\n` +
+                        `- Razorpay / PayU / Paytm\n` +
+                        `- To complete ₹50,000 token payment\n\n` +
+                        `For demo: Payment successful! ✓`
+                    );
+                    
+                    // Mark car as tokened (in real app, this happens after payment success)
+                    car.status = 'tokened';
+                    renderCars();
+                    
+                    // Send confirmation message
+                    alert(`Thank you! ${car.name} has been reserved for you. Our team will contact you shortly.`);
+                }
+            }
+        }
+
+        function filterCars() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const fuelFilter = document.getElementById('filterFuel').value;
+            const transFilter = document.getElementById('filterTransmission').value;
+
+            const filtered = cars.filter(car => {
+                const matchesSearch = car.name.toLowerCase().includes(searchText);
+                const matchesFuel = !fuelFilter || car.fuel === fuelFilter;
+                const matchesTrans = !transFilter || car.transmission === transFilter;
+                return matchesSearch && matchesFuel && matchesTrans;
+            });
+
+            const grid = document.getElementById('carsGrid');
+            grid.innerHTML = '';
+            
+            filtered.forEach(car => {
+                const card = document.createElement('div');
+                card.className = 'car-card';
+                card.innerHTML = `
+                    <div class="car-image">🚗</div>
+                    <div class="car-details">
+                        <div class="car-name">${car.name}</div>
+                        <div class="car-price">₹${car.price.toLocaleString('en-IN')}</div>
+                        <div class="car-info">
+                            <div>📅 ${car.year}</div>
+                            <div>🛣️ ${car.mileage} km</div>
+                            <div>⛽ ${car.fuel}</div>
+                            <div>⚙️ ${car.transmission}</div>
+                        </div>
+                        <p style="color: #666; margin-bottom: 1rem;">${car.description}</p>
+                        <span class="car-status status-${car.status}">
+                            ${car.status === 'available' ? '✓ Available' : '🔒 Tokened'}
+                        </span>
+                        <div style="margin-top: 1rem;">
+                            ${car.status === 'available' ? 
+                                `<button class="btn btn-token" onclick="initiatePayment(${car.id})">Pay Token & Reserve</button>` : 
+                                '<button class="btn btn-primary" disabled>Reserved</button>'
+                            }
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleAdmin() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('active');
+        }
+
+        function toggleChat() {
+            const widget = document.getElementById('chatWidget');
+            widget.classList.toggle('active');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                const messagesDiv = document.getElementById('chatMessages');
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'message message-user';
+                msgDiv.textContent = message;
+                messagesDiv.appendChild(msgDiv);
+                
+                input.value = '';
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                
+                // Simulate admin response
+                setTimeout(() => {
+                    const responseDiv = document.createElement('div');
+                    responseDiv.className = 'message message-admin';
+                    responseDiv.textContent = 'Thank you for your message. Our team will respond shortly!';
+                    messagesDiv.appendChild(responseDiv);
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }, 1000);
+            }
+        }
+
+        function handleChatEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Initialize
+        renderCars();
+    </script>
+</body>
+</html>
